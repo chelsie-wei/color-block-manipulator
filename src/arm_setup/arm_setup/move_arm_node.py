@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+# ---
+# Move Arm ROS2 Node
+# Step 4
+# 
+# Subscribe to PointStamped from Pixel to Pose, which is an adjusted coordinate
+#           of the item that needs to be picked up
+# Sends Moveit action goals 
+#
+# Acknowledgements: part of the code comes from teaching lab UR3e documentation
+# ---
+
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient

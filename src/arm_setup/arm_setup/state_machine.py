@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+# ---
+# State machine, using Smach
+# high level control and planning of program
+#
+# 
+# ---
+
 import time
 import threading
 

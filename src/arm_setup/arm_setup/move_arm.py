@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+
+# ---
+# Not used
+#
+# File given in UR3e documentation for adaptation purposes
+# ---
+
 import time
 import rclpy
 from rclpy.node import Node
@@ -7,9 +14,6 @@ from geometry_msgs.msg import Vector3
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import MotionPlanRequest, JointConstraint, Constraints, MoveItErrorCodes
 
-
-
-
 # ====================================================================
 #  Paste your 3 positions here
 # ====================================================================
@@ -17,8 +21,6 @@ from moveit_msgs.msg import MotionPlanRequest, JointConstraint, Constraints, Mov
 POSITION_1 = [0.0, -1.5707, 0.0, -1.5707, 0.0, 0.0]
 POSITION_2 = [-0.0042, -0.941, -1.26, -1.189, 0.0, 0.25]
 POSITION_3 = [0.0, -1.5707, 0.0, -1.5707, 0.0, 0.0]
-
-
 
 
 # Double check joint names within RVIZ

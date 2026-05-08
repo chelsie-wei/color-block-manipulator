@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
+# ---
+# Camera Publisher ROS2 Node
+# Step 1 (self written)
+# 
+# Publish image to color detector node
+#         to look for blocks of certain colors (yellow)
+# ---
+
 import rclpy
 from rclpy.node import Node
 import cv2
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-
 
 class CameraPublisher(Node):
     def __init__(self):
@@ -29,8 +36,10 @@ class CameraPublisher(Node):
         self.publisher.publish(msg)
 
     def destroy_node(self):
+
         if self.cap.isOpened():
             self.cap.release()
+
         super().destroy_node()
 
 

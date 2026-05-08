@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+# ---
+# Pixel to Pose ROS2 Node
+# Step 3
+# 
+# Subscribe to a point from color detector node, which
+#           identified the object in frame
+# Publish point stamped, which is a coordinate of the item
+#         to be picked up by the robot arm, given information on the robot,
+#         to MoveArm Node, a moveit node
+# ---
+
 import rclpy
 import numpy as np
 
@@ -11,7 +22,7 @@ from cv_bridge import CvBridge
 import tf2_ros
 import tf2_geometry_msgs
 
-TABLE_Z = 0.01 # assume table is 2 cm above base plane
+TABLE_Z = 0.02 # assume table is 2 cm above base plane
 # grasp_z = TABLE_Z + 0.04 # 4 cm 
 
 class PixelToPose(Node):
@@ -45,11 +56,6 @@ class PixelToPose(Node):
                                  self.pixel_callback, 
                                  10)
 
-        # self.create_subscription(CameraInfo, 
-        #                          "/camera/color/camera_info", 
-        #                          self.camera_info_callback, 
-        #                          10)
-
         # Publisher
         self.point_pub = self.create_publisher(
             PointStamped, 
@@ -64,33 +70,17 @@ class PixelToPose(Node):
 
     def pixel_callback(self, msg):
 
-        # if self.camera_info is None:
-        #     self.get_logger().warn("Waiting for camera info...")
-        #     return
-
         u = msg.x
         v = msg.y
-
-        # Camera intrinsics
-        # K = self.camera_info.k
-
-        # fx = K[0]
-        # fy = K[4]
-        # cx = K[2]
-        # cy = K[5]
 
         Z = self.Z
 
         # Pixel → 3D
-        # X = (u - cx) * self.Z / fx
-        # Y = (v - cy) * self.Z / fy
         X = (u - self.cx) * Z / self.fx
         Y = (v - self.cy) * Z / self.fy
 
         # Create PoseStamped
         point_cam = PointStamped()
-        # point_cam.header.frame_id = self.camera_info.header.frame_id
-        #point_cam.header.stamp = self.get_clock().now().to_msg()
         point_cam.header.stamp = rclpy.time.Time().to_msg()
         point_cam.header.frame_id = self.camera_frame # doesn't need cam info
 

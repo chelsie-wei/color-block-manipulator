@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+# ---
+# Color Detector ROS2 Node
+# Step 2
+# 
+# Subscribe to camera, raw
+# Publish a point to pixel_to_pose node
+#         to be transformed into a coordinate, given camera mount and bot
+#
+# Acknowledgements: color detection comes from color-detection-opencv repo
+#                   from computervisioneng on github
+# ---
+
 import rclpy
 from rclpy.node import Node
 
@@ -9,7 +21,6 @@ from cv_bridge import CvBridge
 
 import cv2
 import numpy as np
-
 
 class ColorDetector(Node):
     def __init__(self):
@@ -25,7 +36,7 @@ class ColorDetector(Node):
             10
         )
 
-        # publish location of item? 
+        # publish location of item
         self.pub = self.create_publisher(
             Point, 
             "/color_object_position", 
@@ -50,6 +61,7 @@ class ColorDetector(Node):
 
         point, display_frame, mask = self.detect_color(frame)
 
+        # show view
         cv2.imshow("Color Detector View", display_frame)
         cv2.imshow("mask", mask)
         cv2.waitKey(1)
@@ -63,7 +75,7 @@ class ColorDetector(Node):
             self.publish_best_detections()
             self.published = True
 
-    # right now, just yellow
+    # right now, detects just yellow
     def detect_color(self, frame):
         hsvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -104,8 +116,8 @@ class ColorDetector(Node):
         cv2.circle(display_frame, (int(cx), int(cy)), 5, (0, 0, 255), -1)
 
         return (cx, cy), display_frame, mask
-        #self.get_logger().info(f"Detected, but not published, yellow position: x={cx}, y={cy}")
 
+    # Given a series of detections, publish the median only
     def publish_best_detections(self):
 
         if len(self.detections) == 0:

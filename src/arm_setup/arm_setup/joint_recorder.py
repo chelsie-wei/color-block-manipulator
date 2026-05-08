@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+
+# ---
+# Not used - used to record hard-coded, drop down positions
+# 
+# 
+# ---
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
