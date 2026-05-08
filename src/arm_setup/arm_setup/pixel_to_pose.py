@@ -22,8 +22,7 @@ from cv_bridge import CvBridge
 import tf2_ros
 import tf2_geometry_msgs
 
-TABLE_Z = 0.02 # assume table is 2 cm above base plane
-# grasp_z = TABLE_Z + 0.04 # 4 cm 
+TABLE_Z = -0.17 # assume table is 0.17 cm below base plane
 
 class PixelToPose(Node):
     def __init__(self):
@@ -31,6 +30,7 @@ class PixelToPose(Node):
 
         self.get_logger().info("PixelToPose node started")
 
+        # Approximate camera, as I can't find any camera info online
         self.fx = 600.0
         self.fy = 600.0
         self.cx = 320.0
@@ -39,11 +39,8 @@ class PixelToPose(Node):
         self.bridge = CvBridge()
 
         # Latest data holders
-        # self.depth_image = None
         self.camera_info = None
-
         self.target_frame = "base_link"
-        # self.camera_frame = "camera_color_optical_frame"
         self.camera_frame = "camera_link"
 
         self.Z = 0.14  # approximate distance from camera to table
@@ -95,7 +92,7 @@ class PixelToPose(Node):
                 timeout=rclpy.duration.Duration(seconds=1.0)
             )
 
-            point_base.point.z = 0.15
+            point_base.point.z = -0.1
 
         except Exception as e:
             self.get_logger().error(f"TF transform failed: {e}")

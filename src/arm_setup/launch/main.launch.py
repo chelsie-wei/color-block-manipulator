@@ -23,19 +23,20 @@ def generate_launch_description():
     )
 
     # UR driver in fake/simulation mode
-    ur_driver = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(ur_driver_dir, 'launch', 'ur_control.launch.py')
-        ),
-        launch_arguments={
-            'ur_type': 'ur3e',
-            'robot_ip': '192.168.56.101',
-            'kinematics_params': os.path.expanduser('~/my_robot_calibration.yaml'),
-            'launch_rviz': 'false',
-            'use_fake_hardware': 'true',   # ← fake simulation mode
-            'fake_sensor_commands': 'true',
-        }.items()
-    )
+    # ur_driver = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(ur_driver_dir, 'launch', 'ur_control.launch.py')
+    #     ),
+    #     launch_arguments={
+    #         'ur_type': 'ur3e',
+    #         #'robot_ip': '192.168.56.101',
+    #         'robot_ip': '10.3.4.12',
+    #         'kinematics_params': os.path.expanduser('$HOME/my_robot_calibration.yaml'),
+    #         'launch_rviz': 'false',
+    #         'use_fake_hardware': 'false',   # ← fake simulation mode
+    #         #'fake_sensor_commands': 'true',
+    #     }.items()
+    # )
 
     # MoveIt - delayed to give driver time to start
     moveit = IncludeLaunchDescription(
@@ -59,7 +60,7 @@ def generate_launch_description():
 
     return LaunchDescription([
 
-        ur_driver,
+        # ur_driver,
         moveit,
         static_tf,
 

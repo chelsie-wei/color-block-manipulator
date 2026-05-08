@@ -9,7 +9,6 @@
 
 import time
 import threading
-
 import rclpy
 from rclpy.node import Node
 
@@ -19,9 +18,7 @@ from smach_ros import IntrospectionServer
 from geometry_msgs.msg import PointStamped
 from std_msgs.msg import String
 
-
 WAIT_AT_PICK_SECONDS = 3.0
-
 
 class Idle(smach.State):
     def __init__(self, node):
@@ -61,7 +58,6 @@ class Idle(smach.State):
             if self.target is not None:
                 userdata.target = self.target
                 return "target_received"
-
 
 class MoveToPick(smach.State):
     def __init__(self, node):

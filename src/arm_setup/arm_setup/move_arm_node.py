@@ -15,11 +15,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 
-from geometry_msgs.msg import PoseStamped
-from moveit_msgs.msg import PositionConstraint, OrientationConstraint
+from geometry_msgs.msg import PoseStamped, PointStamped, Pose, Vector3
 from shape_msgs.msg import SolidPrimitive
-
-from geometry_msgs.msg import PointStamped, Pose, Vector3
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
     Constraints,
@@ -30,8 +27,6 @@ from moveit_msgs.msg import (
     PlanningOptions,
     MoveItErrorCodes,
 )
-from shape_msgs.msg import SolidPrimitive
-
 
 class MoveArmNode(Node):
     def __init__(self):
@@ -46,7 +41,7 @@ class MoveArmNode(Node):
         self.moveit_client = ActionClient(
             self,
             MoveGroup,
-            "/move_action"   # change to "/move_group" if that is your action name
+            "/move_action"   
         )
 
         self.get_logger().info("Waiting for MoveIt action server...")
@@ -72,7 +67,6 @@ class MoveArmNode(Node):
         )
 
         self.move_to_pose("Camera target", x, y, z)
-
 
     def move_to_pose(self, name, x, y, z):
         print(f"Moving to {name}: x={x}, y={y}, z={z}")
@@ -102,7 +96,7 @@ class MoveArmNode(Node):
         position_constraint = PositionConstraint()
         position_constraint.header.frame_id = "base_link"
 
-        # IMPORTANT: check your actual end-effector link name in RViz/URDF
+        # TODO: check actual end-effector link name in RViz/URDF
         position_constraint.link_name = "tool0"
 
         box = SolidPrimitive()
@@ -129,8 +123,7 @@ class MoveArmNode(Node):
         orientation_constraint.header.frame_id = "base_link"
         orientation_constraint.link_name = "tool0"
 
-        # Example neutral orientation
-        # You may need to change this depending on how you want the wrist/tool pointed
+        # Neutral orientation
         orientation_constraint.orientation.x = 1.0
         orientation_constraint.orientation.y = 0.0
         orientation_constraint.orientation.z = 0.0
@@ -154,10 +147,6 @@ class MoveArmNode(Node):
 
         future = self.moveit_client.send_goal_async(goal)
         future.add_done_callback(self.goal_response_callback)
-        #rclpy.spin_until_future_complete(self, future)
-
-        #result_future = future.result().get_result_async()
-        #rclpy.spin_until_future_complete(self, result_future)
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
@@ -183,14 +172,11 @@ class MoveArmNode(Node):
 
         self.busy = False
 
-
 def main(args=None):
     rclpy.init(args=args)
-
     node = MoveArmNode()
 
     try:
-
         rclpy.spin(node)
     finally:
         node.destroy_node()
