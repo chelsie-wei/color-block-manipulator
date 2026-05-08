@@ -21,5 +21,9 @@ This project uses the [Robot Operating System 2 (ROS2)](https://www.ros.org/) an
 OpenCV for computer vision  
 Smach for high level state machine  
 
+## Acknowledgements  
+The camera publisher is implemented by hand.  
+Color recognition is inspired by this repository on Github.  
+
 ## TODOs  
 TBD
