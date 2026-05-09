@@ -22,6 +22,7 @@ OpenCV for computer vision
 Smach for high level state machine  
 
 ## Acknowledgements  
+Robotics teaching lab staff for robot and rosbridge documentations <3  
 The camera publisher is implemented by hand.  
 Color recognition is inspired by this repository on Github.  
 
