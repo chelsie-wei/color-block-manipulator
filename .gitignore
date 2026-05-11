@@ -5,3 +5,6 @@ log/
 *.pyc
 __pycache__/
 .vscode/
+
+frames_2026-05-07_19.20.24.gv
+frames_2026-05-07_19.20.24.pdf

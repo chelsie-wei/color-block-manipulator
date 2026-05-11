@@ -89,30 +89,6 @@ class MoveArmNode(Node):
         self.create_timer(2.0, lambda: self.scene_pub.publish(scene))
         # --- End table ---
 
-        # --- Railing collision object ---
-        # 4 railings around the table edges
-        # railings = CollisionObject()
-        # railings.header.frame_id = "base_link"
-        # railings.id = "railings"
-        # railings.operation = CollisionObject.ADD
-
-        # for dims, pos in [
-        #     ([0.8, 0.05, 0.3], [0.0,  0.35, 0.63]),  # front
-        #     ([0.8, 0.05, 0.3], [0.0, -0.35, 0.63]),  # back
-        #     ([0.05, 0.8, 0.3], [ 0.35, 0.0, 0.63]),  # left
-        #     ([0.05, 0.8, 0.3], [-0.35, 0.0, 0.63]),  # right
-        # ]:
-        #     r = SolidPrimitive()
-        #     r.type = SolidPrimitive.BOX
-        #     r.dimensions = dims
-        #     p = Pose()
-        #     p.position.x, p.position.y, p.position.z = pos
-        #     p.orientation.w = 1.0
-        #     railings.primitives.append(r)
-        #     railings.primitive_poses.append(p)
-
-        # scene.world.collision_objects.append(railings)
-
         self.get_logger().info("MoveArm node started")
 
     def target_callback(self, msg):
