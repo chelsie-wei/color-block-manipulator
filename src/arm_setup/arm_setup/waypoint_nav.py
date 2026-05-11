@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Hardcoded turtlebot navigation
+# Takes turtlebot from one side of the room to the robot arm
+
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
