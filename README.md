@@ -19,7 +19,7 @@ source /opt/ros/kilted/setup.bash
 ```
 Download or clone the package arm_setup before building + sourcing it.  
 ```bash
-python3 wayfinding.py  
+python3 waypoint_nav.py  
 ros2 launch arm_setup main.launch.py
 ```
 Run the above files / launch files respectively to run the turtlebot and the robot arm. 
@@ -28,8 +28,14 @@ Run the above files / launch files respectively to run the turtlebot and the rob
 Turtlebot (Nav2): mapping via Nav2 -> save map and start / finish coordinates from rviz  
 Robot arm (Ur3e): Camera sensors -> pixels from image -> coordinates of block through pixels -> motion planning to pick up item from item cooredinates -> send action goal to robot arm -> repeat.  
 
-## Demonstration  
-TBD
+## Set up   
+<img src="src/arm_setup/setup.png" width="500"> <img src="src/arm_setup/IMG_6658.JPG" width="500">  
+
+The camera (hard-coded depth) is mounted 10 cm above table, facing downward by 60 degrees. The robot arm is mounted ~16cm above the table. The block (yellow) is picked up at the **pick up** location using closed-loop sensing. The robot would have to calculate and execute an action goal via moveit! to pick it up.  
+
+The **drop** action, however, is hard-coded, as placing the block is dependent upon its order in a word.  
+
+Because the camera intrinsics and depth are hardcoded, there exists some discrepancy between what is captured and what is executed, but not by much.  These should ideally be refined.
 
 ## Libraries  
 This project uses the [Robot Operating System 2 (ROS2)](https://www.ros.org/) and its affiliated libraries. Such as  
@@ -45,4 +51,6 @@ Color recognition is inspired by this repository on Github.
 
 ## TODOs  
 - create userinterface
-- allow multiple blocks / color recognition  
+- allow multiple blocks / color recognition
+- fine-tune camera location
+- add additional collision objects (not just table)  
