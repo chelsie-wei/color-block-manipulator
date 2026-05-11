@@ -30,13 +30,11 @@ setup(
     entry_points={
         'console_scripts': [
             "camera_publisher = arm_setup.camera_publisher:main",
-            #"move_arm = arm_setup.move_arm:main",
-            #"move_arm_sub = arm_setup.move_arm_sub:main",
-            # "fake_publisher = arm_setup.fake_publisher:main",
             "color_detector_node = arm_setup.color_detector_node:main",
             "pixel_to_pose = arm_setup.pixel_to_pose:main",
             "move_arm_node = arm_setup.move_arm_node:main",
-            #"state_machine = arm_setup.state_machine:main",
+            'turtle_bridge = arm_setup.turtle_bridge:main',
+            'drop_state_machine = arm_setup.drop_state_machine:main',
         ],
     },
 )

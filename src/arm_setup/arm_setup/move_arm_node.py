@@ -16,6 +16,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 
 from geometry_msgs.msg import PoseStamped, PointStamped, Pose, Vector3
+from std_msgs.msg import Bool
 from shape_msgs.msg import SolidPrimitive
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
@@ -26,6 +27,8 @@ from moveit_msgs.msg import (
     MotionPlanRequest,
     PlanningOptions,
     MoveItErrorCodes,
+    CollisionObject,
+    PlanningScene
 )
 
 class MoveArmNode(Node):
@@ -35,9 +38,9 @@ class MoveArmNode(Node):
         self.group_name = "ur_manipulator"
         self.ee_link = "tool0"
         self.frame_id = "base_link"
-
         self.busy = False
 
+        # action client
         self.moveit_client = ActionClient(
             self,
             MoveGroup,
@@ -55,9 +58,70 @@ class MoveArmNode(Node):
             10
         )
 
+        self.done_publisher = self.create_publisher(
+            Bool,
+            "/move_complete",
+            10
+        )
+
+        # --- Table collision object ---
+        table = CollisionObject()
+        table.header.frame_id = "base_link"
+        table.id = "table"
+
+        box = SolidPrimitive()
+        box.type = SolidPrimitive.BOX
+        box.dimensions = [0.7, 0.7, 0.05]  # adjust to table size
+
+        pose = Pose()
+        pose.position.z = -0.13  # table distance
+        pose.orientation.w = 1.0
+
+        table.primitives.append(box)
+        table.primitive_poses.append(pose)
+        table.operation = CollisionObject.ADD
+
+        scene = PlanningScene()
+        scene.is_diff = True
+        scene.world.collision_objects.append(table)
+
+        self.scene_pub = self.create_publisher(PlanningScene, '/planning_scene', 1)
+        self.create_timer(2.0, lambda: self.scene_pub.publish(scene))
+        # --- End table ---
+
+        # --- Railing collision object ---
+        # 4 railings around the table edges
+        # railings = CollisionObject()
+        # railings.header.frame_id = "base_link"
+        # railings.id = "railings"
+        # railings.operation = CollisionObject.ADD
+
+        # for dims, pos in [
+        #     ([0.8, 0.05, 0.3], [0.0,  0.35, 0.63]),  # front
+        #     ([0.8, 0.05, 0.3], [0.0, -0.35, 0.63]),  # back
+        #     ([0.05, 0.8, 0.3], [ 0.35, 0.0, 0.63]),  # left
+        #     ([0.05, 0.8, 0.3], [-0.35, 0.0, 0.63]),  # right
+        # ]:
+        #     r = SolidPrimitive()
+        #     r.type = SolidPrimitive.BOX
+        #     r.dimensions = dims
+        #     p = Pose()
+        #     p.position.x, p.position.y, p.position.z = pos
+        #     p.orientation.w = 1.0
+        #     railings.primitives.append(r)
+        #     railings.primitive_poses.append(p)
+
+        # scene.world.collision_objects.append(railings)
+
         self.get_logger().info("MoveArm node started")
 
     def target_callback(self, msg):
+        if self.busy:
+            self.get_logger().warn("Already moving; ignoring new target")
+            return
+
+        self.busy = True
+
         x = msg.point.x
         y = msg.point.y
         z = msg.point.z
@@ -71,18 +135,12 @@ class MoveArmNode(Node):
     def move_to_pose(self, name, x, y, z):
         print(f"Moving to {name}: x={x}, y={y}, z={z}")
 
-        if self.busy:
-            self.get_logger().warn("Already moving; ignoring new target")
-            return
-
-        self.busy = True
-
         request = MotionPlanRequest()
         request.group_name = "ur_manipulator"
         request.num_planning_attempts = 20
         request.allowed_planning_time = 20.0
-        request.max_velocity_scaling_factor = 0.3
-        request.max_acceleration_scaling_factor = 0.3
+        request.max_velocity_scaling_factor = 0.1
+        request.max_acceleration_scaling_factor = 0.1
 
         request.workspace_parameters.header.frame_id = "base_link"
         request.workspace_parameters.min_corner = Vector3(x=-1.0, y=-1.0, z=-1.0)
@@ -95,13 +153,11 @@ class MoveArmNode(Node):
         # -------------------------------
         position_constraint = PositionConstraint()
         position_constraint.header.frame_id = "base_link"
-
-        # TODO: check actual end-effector link name in RViz/URDF
         position_constraint.link_name = "tool0"
 
         box = SolidPrimitive()
         box.type = SolidPrimitive.BOX
-        box.dimensions = [0.02, 0.02, 0.02]  # allowed target tolerance box
+        box.dimensions = [0.01, 0.01, 0.01]  # allowed target tolerance box
 
         target_pose = PoseStamped()
         target_pose.header.frame_id = "base_link"
@@ -129,9 +185,10 @@ class MoveArmNode(Node):
         orientation_constraint.orientation.z = 0.0
         orientation_constraint.orientation.w = 0.0
 
-        orientation_constraint.absolute_x_axis_tolerance = 0.4
-        orientation_constraint.absolute_y_axis_tolerance = 0.4
-        orientation_constraint.absolute_z_axis_tolerance = 0.4
+        # for the sake of grabbing something below its base, loosen the constraints
+        orientation_constraint.absolute_x_axis_tolerance = 0.2
+        orientation_constraint.absolute_y_axis_tolerance = 0.2
+        orientation_constraint.absolute_z_axis_tolerance = 3.14
         orientation_constraint.weight = 1.0
 
         constraints.orientation_constraints.append(orientation_constraint)
@@ -167,6 +224,12 @@ class MoveArmNode(Node):
 
         if error_code == 1:
             self.get_logger().info("MoveIt planning/execution succeeded")
+
+            # publish done state to state machine
+            msg = Bool()
+            msg.data = True
+            self.busy = False
+            self.done_publisher.publish(msg)
         else:
             self.get_logger().error(f"MoveIt failed with error code: {error_code}")
 

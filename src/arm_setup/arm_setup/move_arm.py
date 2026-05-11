@@ -22,7 +22,6 @@ POSITION_1 = [0.0, -1.5707, 0.0, -1.5707, 0.0, 0.0]
 POSITION_2 = [-0.0042, -0.941, -1.26, -1.189, 0.0, 0.25]
 POSITION_3 = [0.0, -1.5707, 0.0, -1.5707, 0.0, 0.0]
 
-
 # Double check joint names within RVIZ
 JOINT_NAMES = [
    "shoulder_pan_joint",

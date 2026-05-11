@@ -1,5 +1,5 @@
 # ---
-# Launch file
+# Launch file (ur3e)
 # 
 # 
 # ---
@@ -49,14 +49,15 @@ def generate_launch_description():
         }.items()
     )
 
-    # Static transform publisher
     static_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        arguments=['0.30', '0.10', '0.10',
-                   '-0.7854', '0.0', '-1.5708',
-                   'base_link', 'camera_link'],
+    package='tf2_ros',
+    executable='static_transform_publisher',
+    arguments=['-0.15', '0.44', '0.10',
+               '0.0', '1.047', '0.0',
+               'base_link', 'camera_link'],
     )
+
+    # '-0.7854', '0.0', '-1.5708',
 
     return LaunchDescription([
 
@@ -85,9 +86,18 @@ def generate_launch_description():
             additional_env={'RMW_IMPLEMENTATION': 'rmw_cyclonedds_cpp'}
         ),
 
+        # camera publisher
         Node(
             package='arm_setup',
             executable='camera_publisher',
             additional_env={'RMW_IMPLEMENTATION': 'rmw_cyclonedds_cpp'}
+        ),
+
+        # state machine
+        Node(
+            package='arm_setup',
+            executable='drop_state_machine',
+            name='drop_state_machine',
+            output='screen',
         ),
     ])
