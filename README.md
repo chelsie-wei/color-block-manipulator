@@ -3,13 +3,30 @@ An interactive robot robotic system that arranges colored letter blocks to spell
 <img src="https://a.storyblok.com/f/169662/1125x1500/d81c866521/png-ur3e_01_r.png/m/fit-in/1072x1364" width="150"> <img src="https://www.turtlebot.com/assets/images/TurtleBot4_Header.png" width="250">
 
 ## Description  
-The current project programs a robotic arm (specifically the [UR3e](https://www.universal-robots.com/products/ur3e/)) to pick up a target letter block and place it in the order requested by the user. The system is interactive through its closed-loop sensing mechanism: the user places a letter block on a platform, the robot arm detects the block’s position using a camera, and then autonomously picks up and arranges the block accordingly. The The final form of the project includes an interactive page where users can instruct the specific word to rearrange into. Please see TODOs below for more.  
+The current project programs a robotic arm (specifically the [UR3e](https://www.universal-robots.com/products/ur3e/)) to pick up a target letter block and place it in a pre-determined place. Before that, the block would be delivered by a Turtlebot, which navigates itself to the robot arm. The system is interactive through its closed-loop sensing mechanism: the user places a letter block on a platform, the robot arm detects the block’s position using a camera, and then autonomously plans and executes the pick-up action and places the block accordingly.  
+
+The The final form of the project includes an interactive page where users can instruct the specific word to rearrange into, using multiple blocks that enables forming a word. Please see TODOs below for more.  
+
+## Folder structure  
+Please see files from src/arm_setup/arm_setup for relevant nav2 and moveit/ur3e files. Please see each file's header for documentation.  
+The camera publisher is the self-written node.  
 
 ## Installation  
-TBD
+Please make sure to calibrate the robot.  
+```bash
+colcon build --packages-select arm_setup --symlink-install
+source /opt/ros/kilted/setup.bash  
+```
+Download or clone the package arm_setup before building + sourcing it.  
+```bash
+python3 wayfinding.py  
+ros2 launch arm_setup main.launch.py
+```
+Run the above files / launch files respectively to run the turtlebot and the robot arm. 
 
 ## Workflow (ROS nodes)   
-Camera sensors -> pixels from image -> coordinates of block through pixels -> motion planning to pick up item from item cooredinates -> send action goal to robot arm -> repeat.  
+Turtlebot (Nav2): mapping via Nav2 -> save map and start / finish coordinates from rviz  
+Robot arm (Ur3e): Camera sensors -> pixels from image -> coordinates of block through pixels -> motion planning to pick up item from item cooredinates -> send action goal to robot arm -> repeat.  
 
 ## Demonstration  
 TBD
@@ -27,4 +44,5 @@ The camera publisher is implemented by hand.
 Color recognition is inspired by this repository on Github.  
 
 ## TODOs  
-TBD
+- create userinterface
+- allow multiple blocks / color recognition  
