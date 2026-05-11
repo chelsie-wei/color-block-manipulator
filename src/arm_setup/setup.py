@@ -14,6 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', 'arm_setup', 'launch'),
             glob('launch/*.launch.py')),
+        (os.path.join('share', package_name, 'map'), glob('map/*')),
     ],
     package_data={'': ['py.typed']},
     install_requires=['setuptools'],
